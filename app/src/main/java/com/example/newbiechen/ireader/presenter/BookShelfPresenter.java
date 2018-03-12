@@ -86,7 +86,10 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
     //需要修改
     @Override
     public void updateCollBooks(List<CollBookBean> collBookBeans) {
-        if (collBookBeans == null || collBookBeans.isEmpty()) return;
+        if (collBookBeans == null || collBookBeans.isEmpty()){
+            mView.complete();
+            return;
+        }
         List<CollBookBean> collBooks = new ArrayList<>(collBookBeans);
         List<Single<BookDetailBean>> observables = new ArrayList<>(collBooks.size());
         Iterator<CollBookBean> it = collBooks.iterator();
