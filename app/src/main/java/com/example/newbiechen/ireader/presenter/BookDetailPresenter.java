@@ -1,12 +1,10 @@
 package com.example.newbiechen.ireader.presenter;
 
-import android.util.Log;
-
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.BookDetailBean;
 import com.example.newbiechen.ireader.model.bean.CollBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.BookDetailContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.LogUtils;
@@ -30,14 +28,14 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContract.View>
     public void refreshBookDetail(String bookId) {
         this.bookId = bookId;
         refreshBook();
-        refreshComment();
-        refreshRecommend();
+        //refreshComment();
+        //refreshRecommend();
 
     }
 
     @Override
     public void addToBookShelf(CollBookBean collBookBean)  {
-        Disposable disposable = RemoteRepository.getInstance()
+        Disposable disposable = NbwRepository.getInstance()
                 .getBookChapters(collBookBean.get_id())
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe(
@@ -71,7 +69,7 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContract.View>
     }
 
     private void refreshBook(){
-        RemoteRepository
+        NbwRepository
                 .getInstance()
                 .getBookDetail(bookId)
                 .subscribeOn(Schedulers.io())
@@ -96,7 +94,7 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContract.View>
     }
 
     private void refreshComment(){
-        Disposable disposable = RemoteRepository
+        Disposable disposable = NbwRepository
                 .getInstance()
                 .getHotComments(bookId)
                 .subscribeOn(Schedulers.io())
@@ -108,7 +106,7 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContract.View>
     }
 
     private void refreshRecommend(){
-        Disposable disposable = RemoteRepository
+        Disposable disposable = NbwRepository
                 .getInstance()
                 .getRecommendBookList(bookId,3)
                 .subscribeOn(Schedulers.io())

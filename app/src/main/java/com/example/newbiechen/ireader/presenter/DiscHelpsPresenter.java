@@ -4,7 +4,7 @@ import com.example.newbiechen.ireader.model.bean.BookHelpsBean;
 import com.example.newbiechen.ireader.model.flag.BookDistillate;
 import com.example.newbiechen.ireader.model.flag.BookSort;
 import com.example.newbiechen.ireader.model.local.LocalRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.DiscHelpsContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 
@@ -29,7 +29,7 @@ public class DiscHelpsPresenter extends RxPresenter<DiscHelpsContract.View> impl
         //获取数据库中的数据
         Single<List<BookHelpsBean>> localObserver = LocalRepository.getInstance()
                 .getBookHelps(sort.getDbName(), start, limited, distillate.getDbName());
-        Single<List<BookHelpsBean>> remoteObserver = RemoteRepository.getInstance()
+        Single<List<BookHelpsBean>> remoteObserver = NbwRepository.getInstance()
                 .getBookHelps(sort.getNetName(), start, limited, distillate.getNetName());
 
         Single.concat(localObserver,remoteObserver)
@@ -56,7 +56,7 @@ public class DiscHelpsPresenter extends RxPresenter<DiscHelpsContract.View> impl
 
     @Override
     public void refreshBookHelps(BookSort sort, int start, int limited, BookDistillate distillate) {
-        Disposable refreshDispo = RemoteRepository.getInstance()
+        Disposable refreshDispo = NbwRepository.getInstance()
                 .getBookHelps(sort.getNetName(), start, limited, distillate.getNetName())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -85,7 +85,7 @@ public class DiscHelpsPresenter extends RxPresenter<DiscHelpsContract.View> impl
         }
 
         else{
-            Single<List<BookHelpsBean>> single = RemoteRepository.getInstance()
+            Single<List<BookHelpsBean>> single = NbwRepository.getInstance()
                     .getBookHelps(sort.getNetName(), start, limited, distillate.getNetName());
             loadBookHelps(single);
         }

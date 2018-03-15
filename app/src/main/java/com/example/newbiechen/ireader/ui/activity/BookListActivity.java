@@ -14,7 +14,7 @@ import com.example.newbiechen.ireader.RxBus;
 import com.example.newbiechen.ireader.event.BookSubSortEvent;
 import com.example.newbiechen.ireader.model.bean.BookTagBean;
 import com.example.newbiechen.ireader.model.flag.BookListType;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.ui.adapter.HorizonTagAdapter;
 import com.example.newbiechen.ireader.ui.adapter.TagGroupAdapter;
 import com.example.newbiechen.ireader.ui.base.BaseTabActivity;
@@ -160,7 +160,7 @@ public class BookListActivity extends BaseTabActivity {
     }
 
     private void refreshTag(){
-        Disposable refreshDispo = RemoteRepository.getInstance()
+        Disposable refreshDispo = NbwRepository.getInstance()
                 .getBookTags()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

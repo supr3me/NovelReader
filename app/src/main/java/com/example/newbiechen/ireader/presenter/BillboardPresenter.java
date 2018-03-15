@@ -2,7 +2,7 @@ package com.example.newbiechen.ireader.presenter;
 
 import com.example.newbiechen.ireader.model.bean.packages.BillboardPackage;
 import com.example.newbiechen.ireader.model.local.LocalRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.BillboardContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 
@@ -24,7 +24,7 @@ public class BillboardPresenter extends RxPresenter<BillboardContract.View>
         BillboardPackage bean = LocalRepository.getInstance()
                 .getBillboardPackage();
         if (bean == null){
-            RemoteRepository.getInstance()
+            NbwRepository.getInstance()
                     .getBillboardPackage()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

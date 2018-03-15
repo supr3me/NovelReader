@@ -1,7 +1,7 @@
 package com.example.newbiechen.ireader.presenter;
 
 import com.example.newbiechen.ireader.model.flag.BookSortListType;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.BookSortListContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.LogUtils;
@@ -23,7 +23,7 @@ public class BookSortListPresenter extends RxPresenter<BookSortListContract.View
             minor = "";
         }
 
-        Disposable refreshDispo = RemoteRepository.getInstance()
+        Disposable refreshDispo = NbwRepository.getInstance()
                 .getSortBooks(gender,type.getNetName(),major,minor,start,limit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -44,7 +44,7 @@ public class BookSortListPresenter extends RxPresenter<BookSortListContract.View
 
     @Override
     public void loadSortBook(String gender, BookSortListType type, String major, String minor, int start, int limit) {
-        Disposable loadDispo = RemoteRepository.getInstance()
+        Disposable loadDispo = NbwRepository.getInstance()
                 .getSortBooks(gender,type.getNetName(),major,minor,start,limit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

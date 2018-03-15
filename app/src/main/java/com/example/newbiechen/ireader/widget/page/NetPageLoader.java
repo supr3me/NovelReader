@@ -47,7 +47,7 @@ public class NetPageLoader extends PageLoader {
 
         // 将 BookChapter 转换成当前可用的 Chapter
         mChapterList = convertTxtChapter(mCollBook.getBookChapters());
-        isChapterListPrepare = true;
+        isChapterListPrepare = mChapterList.size() > 0;
 
         // 目录加载完成，执行回调操作。
         if (mPageChangeListener != null) {

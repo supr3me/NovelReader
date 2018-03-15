@@ -63,4 +63,6 @@ dependencies {
     // Android Leak Analysis
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+
+    implementation 'org.jsoup:jsoup:1.11.2'
 }

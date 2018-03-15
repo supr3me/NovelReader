@@ -2,7 +2,7 @@ package com.example.newbiechen.ireader.presenter;
 
 import com.example.newbiechen.ireader.model.bean.CommentBean;
 import com.example.newbiechen.ireader.model.bean.CommentDetailBean;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.CommentDetailContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.LogUtils;
@@ -24,13 +24,13 @@ public class CommentDetailPresenter extends RxPresenter<CommentDetailContract.Vi
 
     @Override
     public void refreshCommentDetail(String detailId, int start, int limit) {
-        Single<CommentDetailBean> detailSingle = RemoteRepository
+        Single<CommentDetailBean> detailSingle = NbwRepository
                 .getInstance().getCommentDetail(detailId);
 
-        Single<List<CommentBean>> bestCommentsSingle = RemoteRepository
+        Single<List<CommentBean>> bestCommentsSingle = NbwRepository
                 .getInstance().getBestComments(detailId);
 
-        Single<List<CommentBean>> commentsSingle = RemoteRepository
+        Single<List<CommentBean>> commentsSingle = NbwRepository
                 .getInstance().getDetailComments(detailId, start, limit);
 
         Disposable detailDispo = RxUtils.toCommentDetail(detailSingle, bestCommentsSingle, commentsSingle)
@@ -52,7 +52,7 @@ public class CommentDetailPresenter extends RxPresenter<CommentDetailContract.Vi
 
     @Override
     public void loadComment(String detailId, int start, int limit) {
-        Disposable loadDispo = RemoteRepository.getInstance()
+        Disposable loadDispo = NbwRepository.getInstance()
                 .getDetailComments(detailId, start, limit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

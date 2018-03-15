@@ -1,16 +1,14 @@
 package com.example.newbiechen.ireader.model.remote;
 
-import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.BookDetailBean;
-import com.example.newbiechen.ireader.model.bean.ChapterInfoBean;
 import com.example.newbiechen.ireader.model.bean.packages.BillBookPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BillboardPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookChapterPackage;
+import com.example.newbiechen.ireader.model.bean.packages.BookCommentPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookHelpsPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookListDetailPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookListPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookReviewPackage;
-import com.example.newbiechen.ireader.model.bean.packages.BookCommentPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookSortPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookSubSortPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookTagPackage;
@@ -28,9 +26,7 @@ import com.example.newbiechen.ireader.model.bean.packages.SearchBookPackage;
 import com.example.newbiechen.ireader.model.bean.packages.SortBookPackage;
 import com.example.newbiechen.ireader.model.bean.packages.TagSearchPackage;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -44,6 +40,7 @@ public interface BookApi {
 
     /**
      * 推荐书籍
+     *
      * @param gender
      * @return
      */
@@ -53,8 +50,9 @@ public interface BookApi {
 
     /**
      * 获取书籍的章节总列表
+     *
      * @param bookId
-     * @param view 默认参数为:chapters
+     * @param view   默认参数为:chapters
      * @return
      */
     @GET("/mix-atoc/{bookId}")
@@ -63,6 +61,7 @@ public interface BookApi {
     /**
      * 章节的内容
      * 这里采用的是同步请求。
+     *
      * @param url
      * @return
      */
@@ -132,6 +131,7 @@ public interface BookApi {
     /***********************************帖子详情*******************************************************/
     /**
      * 获取综合讨论区帖子详情 :/post/{detailId}
+     *
      * @param detailId ->_id
      * @return
      */
@@ -144,7 +144,7 @@ public interface BookApi {
      *
      * @param detailId->_id
      * @return
-     * */
+     */
     @GET("/post/review/{detailId}")
     Single<ReviewDetailPackage> getReviewDetailPacakge(@Path("detailId") String detailId);
 
@@ -159,7 +159,7 @@ public interface BookApi {
     Single<HelpsDetailPackage> getHelpsDetailPackage(@Path("detailId") String detailId);
 
 
-     /**
+    /**
      * 获取神评论列表(综合讨论区、书评区、书荒区皆为同一接口)
      *
      * @param detailId -> _id
@@ -168,19 +168,20 @@ public interface BookApi {
     @GET("/post/{detailId}/comment/best")
     Single<CommentsPackage> getBestCommentPackage(@Path("detailId") String detailId);
 
-     /**
+    /**
      * 获取综合讨论区帖子详情内的评论列表        :/post/{disscussionId}/comment
      * 获取书评区、书荒区帖子详情内的评论列表     :/post/review/{disscussionId}/comment
+     *
      * @param detailId->_id
-     * @param start              0
-     * @param limit              30
+     * @param start         0
+     * @param limit         30
      * @return
      **/
-     @GET("/post/{detailId}/comment")
-     Single<CommentsPackage> getCommentPackage(@Path("detailId") String detailId, @Query("start") String start, @Query("limit") String limit);
+    @GET("/post/{detailId}/comment")
+    Single<CommentsPackage> getCommentPackage(@Path("detailId") String detailId, @Query("start") String start, @Query("limit") String limit);
 
-     @GET("/post/review/{detailId}/comment")
-     Single<CommentsPackage> getBookCommentPackage( @Path("detailId") String detailId, @Query("start") String start, @Query("limit") String limit);
+    @GET("/post/review/{detailId}/comment")
+    Single<CommentsPackage> getBookCommentPackage(@Path("detailId") String detailId, @Query("start") String start, @Query("limit") String limit);
 
 
     /************************************find****************************************************/
@@ -242,8 +243,9 @@ public interface BookApi {
      * 本周最热：duration=last-seven-days&sort=collectorCount
      * 最新发布：duration=all&sort=created
      * 最多收藏：duration=all&sort=collectorCount
-     *
+     * <p>
      * 如:http://api.zhuishushenqi.com/book-list?duration=last-seven-days&sort=collectorCount&start=0&limit=20&tag=%E9%83%BD%E5%B8%82&gender=male
+     *
      * @param tag    都市、古代、架空、重生、玄幻、网游
      * @param gender male、female
      * @param limit  20
@@ -251,8 +253,8 @@ public interface BookApi {
      */
     @GET("/book-list")
     Single<BookListPackage> getBookListPackage(@Query("duration") String duration, @Query("sort") String sort,
-                                             @Query("start") String start, @Query("limit") String limit,
-                                             @Query("tag") String tag, @Query("gender") String gender);
+                                               @Query("start") String start, @Query("limit") String limit,
+                                               @Query("tag") String tag, @Query("gender") String gender);
 
     /**
      * 获取主题书单标签列表
@@ -284,6 +286,7 @@ public interface BookApi {
 
     /**
      * 书籍推荐书单
+     *
      * @param bookId
      * @param limit
      * @return
@@ -293,6 +296,7 @@ public interface BookApi {
 
     /**
      * 书籍详情
+     *
      * @param bookId
      * @return
      */
@@ -301,6 +305,7 @@ public interface BookApi {
 
     /**
      * 根据书籍的 Tag 进行检索
+     *
      * @param tags
      * @param start
      * @param limit

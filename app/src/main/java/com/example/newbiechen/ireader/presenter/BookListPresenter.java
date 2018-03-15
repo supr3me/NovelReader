@@ -1,9 +1,8 @@
 package com.example.newbiechen.ireader.presenter;
 
 import com.example.newbiechen.ireader.model.bean.BookListBean;
-import com.example.newbiechen.ireader.model.bean.BookListDetailBean;
 import com.example.newbiechen.ireader.model.flag.BookListType;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.BookListContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.LogUtils;
@@ -80,15 +79,15 @@ public class BookListPresenter extends RxPresenter<BookListContract.View> implem
 
         switch (type){
             case HOT:
-                bookListSingle = RemoteRepository.getInstance()
+                bookListSingle = NbwRepository.getInstance()
                         .getBookLists(type.getNetName(),"collectorCount",start,limited,tag,gender);
                 break;
             case NEWEST:
-                bookListSingle = RemoteRepository.getInstance()
+                bookListSingle = NbwRepository.getInstance()
                         .getBookLists("all",type.getNetName(),start,limited,tag,gender);
                 break;
             case COLLECT:
-                bookListSingle = RemoteRepository.getInstance()
+                bookListSingle = NbwRepository.getInstance()
                         .getBookLists("all",type.getNetName(),start,limited,tag,gender);
                 break;
         }

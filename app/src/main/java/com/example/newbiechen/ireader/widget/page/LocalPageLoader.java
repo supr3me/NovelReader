@@ -356,7 +356,7 @@ public class LocalPageLoader extends PageLoader {
                 && mCollBook.getBookChapters() != null) {
 
             mChapterList = convertTxtChapter(mCollBook.getBookChapters());
-            isChapterListPrepare = true;
+            isChapterListPrepare = mChapterList.size() > 0;
 
             //提示目录加载完成
             if (mPageChangeListener != null) {

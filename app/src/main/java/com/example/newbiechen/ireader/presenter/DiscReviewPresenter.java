@@ -1,13 +1,11 @@
 package com.example.newbiechen.ireader.presenter;
 
-import static com.example.newbiechen.ireader.utils.LogUtils.*;
-
 import com.example.newbiechen.ireader.model.bean.BookReviewBean;
 import com.example.newbiechen.ireader.model.flag.BookDistillate;
 import com.example.newbiechen.ireader.model.flag.BookSort;
 import com.example.newbiechen.ireader.model.flag.BookType;
 import com.example.newbiechen.ireader.model.local.LocalRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.DiscReviewContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 
@@ -17,6 +15,8 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.example.newbiechen.ireader.utils.LogUtils.e;
 
 /**
  * Created by newbiechen on 17-4-21.
@@ -33,7 +33,7 @@ public class DiscReviewPresenter extends RxPresenter<DiscReviewContract.View> im
         Single<List<BookReviewBean>> localObserver = LocalRepository.getInstance()
                 .getBookReviews(sort.getDbName(), bookType.getNetName(),
                         start, limited, distillate.getDbName());
-        Single<List<BookReviewBean>> remoteObserver = RemoteRepository.getInstance()
+        Single<List<BookReviewBean>> remoteObserver = NbwRepository.getInstance()
                 .getBookReviews(sort.getNetName(), bookType.getNetName(),
                         start, limited, distillate.getNetName());
 
@@ -62,7 +62,7 @@ public class DiscReviewPresenter extends RxPresenter<DiscReviewContract.View> im
     @Override
     public void refreshBookReview(BookSort sort, BookType bookType,
                                   int start, int limited, BookDistillate distillate) {
-        Disposable refreshDispo = RemoteRepository.getInstance()
+        Disposable refreshDispo = NbwRepository.getInstance()
                 .getBookReviews(sort.getNetName(), bookType.getNetName(),
                         start, limited, distillate.getNetName())
                 .subscribeOn(Schedulers.io())
@@ -95,7 +95,7 @@ public class DiscReviewPresenter extends RxPresenter<DiscReviewContract.View> im
 
         else{
             //单纯的加载数据
-            Single<List<BookReviewBean>> single = RemoteRepository.getInstance()
+            Single<List<BookReviewBean>> single = NbwRepository.getInstance()
                     .getBookReviews(sort.getNetName(), bookType.getNetName(),
                             start, limited, distillate.getNetName());
             loadBookReview(single);

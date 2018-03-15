@@ -14,11 +14,11 @@ import com.example.newbiechen.ireader.event.DeleteTaskEvent;
 import com.example.newbiechen.ireader.event.DownloadMessage;
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.DownloadTaskBean;
-import com.example.newbiechen.ireader.utils.BookManager;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.model.local.LocalRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.ui.base.BaseService;
+import com.example.newbiechen.ireader.utils.BookManager;
 import com.example.newbiechen.ireader.utils.LogUtils;
 import com.example.newbiechen.ireader.utils.NetworkUtils;
 
@@ -301,7 +301,7 @@ public class DownloadService extends BaseService {
         final int[] result = {LOAD_NORMAL};
 
         //问题:(这里有个问题，就是body其实比较大，如何获取数据流而不是对象，)是不是直接使用OkHttpClient交互会更好一点
-        Disposable disposable = RemoteRepository.getInstance()
+        Disposable disposable = NbwRepository.getInstance()
                 .getChapterInfo(bean.getLink())
                 //表示在当前环境下执行
                 .subscribe(

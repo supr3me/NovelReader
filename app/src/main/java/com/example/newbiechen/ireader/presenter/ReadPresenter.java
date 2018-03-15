@@ -4,7 +4,7 @@ package com.example.newbiechen.ireader.presenter;
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.ChapterInfoBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.ReadContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.LogUtils;
@@ -37,7 +37,7 @@ public class ReadPresenter extends RxPresenter<ReadContract.View>
 
     @Override
     public void loadCategory(String bookId) {
-        Disposable disposable = RemoteRepository.getInstance()
+        Disposable disposable = NbwRepository.getInstance()
                 .getBookChapters(bookId)
                 .doOnSuccess(new Consumer<List<BookChapterBean>>() {
                     @Override
@@ -79,7 +79,7 @@ public class ReadPresenter extends RxPresenter<ReadContract.View>
         for (int i = 0; i < size; ++i) {
             TxtChapter bookChapter = bookChapters.get(i);
             // 网络中获取数据
-            Single<ChapterInfoBean> chapterInfoSingle = RemoteRepository.getInstance()
+            Single<ChapterInfoBean> chapterInfoSingle = NbwRepository.getInstance()
                     .getChapterInfo(bookChapter.getLink());
 
             chapterInfos.add(chapterInfoSingle);

@@ -1,13 +1,11 @@
 package com.example.newbiechen.ireader.presenter;
 
-import static com.example.newbiechen.ireader.utils.LogUtils.*;
-
 import com.example.newbiechen.ireader.model.bean.BookCommentBean;
 import com.example.newbiechen.ireader.model.flag.BookDistillate;
 import com.example.newbiechen.ireader.model.flag.BookSort;
 import com.example.newbiechen.ireader.model.flag.CommunityType;
 import com.example.newbiechen.ireader.model.local.LocalRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.DiscCommentContact;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 
@@ -17,6 +15,8 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.example.newbiechen.ireader.utils.LogUtils.e;
 
 /**
  * Created by newbiechen on 17-4-20.
@@ -33,7 +33,7 @@ public class DiscCommentPresenter extends RxPresenter<DiscCommentContact.View> i
         Single<List<BookCommentBean>> localObserver = LocalRepository.getInstance()
                 .getBookComments(block.getNetName(), sort.getDbName(),
                         start, limited, distillate.getDbName());
-        Single<List<BookCommentBean>> remoteObserver = RemoteRepository.getInstance()
+        Single<List<BookCommentBean>> remoteObserver = NbwRepository.getInstance()
                 .getBookComment(block.getNetName(), sort.getNetName(),
                         start, limited, distillate.getNetName());
 
@@ -65,7 +65,7 @@ public class DiscCommentPresenter extends RxPresenter<DiscCommentContact.View> i
     @Override
     public void refreshComment(CommunityType block, BookSort sort,
                                int start, int limited, BookDistillate distillate) {
-        Disposable refreshDispo = RemoteRepository.getInstance()
+        Disposable refreshDispo = NbwRepository.getInstance()
                 .getBookComment(block.getNetName(),sort.getNetName(),
                         start,limited,distillate.getNetName())
                 .subscribeOn(Schedulers.io())
@@ -97,7 +97,7 @@ public class DiscCommentPresenter extends RxPresenter<DiscCommentContact.View> i
 
         else{
             //单纯的加载数据
-            Single<List<BookCommentBean>> single = RemoteRepository.getInstance()
+            Single<List<BookCommentBean>> single = NbwRepository.getInstance()
                     .getBookComment(block.getNetName(),sort.getNetName(),
                             start,limited,distillate.getNetName());
             loadComment(single);

@@ -2,7 +2,7 @@ package com.example.newbiechen.ireader.presenter;
 
 import com.example.newbiechen.ireader.model.bean.packages.BookSortPackage;
 import com.example.newbiechen.ireader.model.bean.packages.BookSubSortPackage;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.BookSortContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.LogUtils;
@@ -21,9 +21,9 @@ public class BookSortPresenter extends RxPresenter<BookSortContract.View> implem
     @Override
     public void refreshSortBean() {
         //这个最好是设定一个默认时间采用Remote加载，如果Remote加载失败则采用数据中的数据。我这里先写死吧
-        Single<BookSortPackage> sortSingle = RemoteRepository.getInstance()
+        Single<BookSortPackage> sortSingle = NbwRepository.getInstance()
                 .getBookSortPackage();
-        Single<BookSubSortPackage> subSortSingle = RemoteRepository.getInstance()
+        Single<BookSubSortPackage> subSortSingle = NbwRepository.getInstance()
                 .getBookSubSortPackage();
 
         Single<SortPackage> zipSingle =  Single.zip(sortSingle, subSortSingle,
@@ -52,7 +52,7 @@ public class BookSortPresenter extends RxPresenter<BookSortContract.View> implem
     /*    BookSortPackage bean = LocalRepository.getInstance()
                 .getBookSortPackage();
         if (bean == null){
-            RemoteRepository.getInstance()
+            NbwRepository.getInstance()
                     .getBookSortPackage()
                     .doOnSuccess(
                             (value) ->{

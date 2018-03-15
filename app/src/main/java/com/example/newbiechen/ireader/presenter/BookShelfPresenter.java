@@ -6,7 +6,7 @@ import com.example.newbiechen.ireader.model.bean.BookDetailBean;
 import com.example.newbiechen.ireader.model.bean.CollBookBean;
 import com.example.newbiechen.ireader.model.bean.DownloadTaskBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
-import com.example.newbiechen.ireader.model.remote.RemoteRepository;
+import com.example.newbiechen.ireader.model.remote.NbwRepository;
 import com.example.newbiechen.ireader.presenter.contract.BookShelfContract;
 import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.Constant;
@@ -54,7 +54,7 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
 
     @Override
     public void loadRecommendBooks(String gender) {
-        Disposable disposable = RemoteRepository.getInstance()
+        Disposable disposable = NbwRepository.getInstance()
                 .getRecommendBooks(gender)
                 .doOnSuccess(new Consumer<List<CollBookBean>>() {
                     @Override
@@ -100,7 +100,7 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
                 it.remove();
             }
             else {
-                observables.add(RemoteRepository.getInstance()
+                observables.add(NbwRepository.getInstance()
                         .getBookDetail(collBook.get_id()));
             }
         }
@@ -158,7 +158,7 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
         List<Single<List<BookChapterBean>>> observables = new ArrayList<>(collBookBeans.size());
         for (CollBookBean bean : collBookBeans){
             observables.add(
-                    RemoteRepository.getInstance().getBookChapters(bean.get_id())
+                    NbwRepository.getInstance().getBookChapters(bean.get_id())
             );
         }
         Iterator<CollBookBean> it = collBookBeans.iterator();
