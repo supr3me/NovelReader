@@ -30,6 +30,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -71,8 +74,8 @@ public class NbwRepository {
     }
 
     /***************************************书籍详情**********************************************/
-    public Single<BookDetailBean> getBookDetail(String bookId) {
-        return Single.create(emitter -> {
+    public Observable<BookDetailBean> getBookDetail(String bookId) {
+        return Observable.create(emitter -> {
             try {
                 Request request = new Request.Builder().url(BASE_URL + bookId).build();
                 String html = getResponseBody(RemoteHelper.getInstance().getOkHttpClient(), request);
@@ -88,7 +91,7 @@ public class NbwRepository {
                 bean.setUpdated(node.text("#btop-info > div > article > div > div.col-xs-8 > ul > li:nth-child(4)"));
                 bean.setLastChapter(node.text("#btop-info > div > article > div > div.col-xs-8 > ul > li:nth-child(5) > a"));
                 bean.setRetentionRatio("1024");
-                emitter.onSuccess(bean);
+                emitter.onNext(bean);
             } catch (Exception e) {
                 e.printStackTrace();
                 emitter.onError(e);
@@ -96,8 +99,8 @@ public class NbwRepository {
         });
     }
 
-    public Single<List<BookChapterBean>> getBookChapters(String bookId) {
-        return Single.create(emitter -> {
+    public Observable<List<BookChapterBean>> getBookChapters(String bookId) {
+        return Observable.create(emitter -> {
             try {
                 Request request = new Request.Builder().url(BASE_URL + bookId + "mulu.htm").build();
                 String html = getResponseBody(RemoteHelper.getInstance().getOkHttpClient(), request);
@@ -110,7 +113,7 @@ public class NbwRepository {
                     chapter.setLink(BASE_URL + node1.href());
                     chapters.add(chapter);
                 }
-                emitter.onSuccess(chapters);
+                emitter.onNext(chapters);
             } catch (Exception e) {
                 e.printStackTrace();
                 emitter.onError(e);
@@ -124,22 +127,32 @@ public class NbwRepository {
      * @param url
      * @return
      */
-    public Single<ChapterInfoBean> getChapterInfo(String url) {
-        return Single.create(emitter -> {
-            try {
-                Request request = new Request.Builder().url(url).build();
-                String html = getResponseBody(RemoteHelper.getInstance().getOkHttpClient(), request);
-                Node node = new Node(html);
-                ChapterInfoBean detail = new ChapterInfoBean();
-                detail.setTitle(node.text("#h1 > h1"));
-                String body = node.text("#txtContent");
-                detail.setBody(body);
-                emitter.onSuccess(detail);
-            } catch (Exception e) {
-                e.printStackTrace();
-                emitter.onError(e);
-            }
-        });
+    public Flowable<ChapterInfoBean> getChapterInfo(String url) {
+//        return Single.create(emitter -> {
+//            try {
+//                Request request = new Request.Builder().url(url).build();
+//                String html = getResponseBody(RemoteHelper.getInstance().getOkHttpClient(), request);
+//                Node node = new Node(html);
+//                ChapterInfoBean detail = new ChapterInfoBean();
+//                detail.setTitle(node.text("#h1 > h1"));
+//                String body = node.textWithBr("#txtContent");
+//                detail.setBody(body);
+//                emitter.onSuccess(detail);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                emitter.onError(e);
+//            }
+//        });
+        Request request = new Request.Builder().url(url).build();
+        return getFlowResponse(RemoteHelper.getInstance().getOkHttpClient(), request)
+                .map(html -> {
+                    Node node = new Node(html);
+                    ChapterInfoBean detail = new ChapterInfoBean();
+                    detail.setTitle(node.text("#h1 > h1"));
+                    String body = node.textWithBr("#txtContent");
+                    detail.setBody(body);
+                    return detail;
+                });
     }
 
     /**
@@ -172,7 +185,7 @@ public class NbwRepository {
         });
     }
 
-    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException {
+    private static String getResponseBody(OkHttpClient client, Request request) {
         Response response = null;
         try {
             response = client.newCall(request).execute();
@@ -193,7 +206,46 @@ public class NbwRepository {
                 response.close();
             }
         }
-        throw new NetworkErrorException();
+        return null;
+    }
+
+    private static Observable<String> getResponse(OkHttpClient client, Request request) {
+        return Observable.create(emitter -> {
+            Response response;
+            response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                byte[] bodybytes = response.body().bytes();
+                String body = new String(bodybytes);
+                if (body.indexOf("charset=gb2312") != -1) {
+                    body = new String(bodybytes, "GB2312");
+                } else {
+                    body = new String(bodybytes, "gbk");
+                }
+                emitter.onNext(body);
+            } else {
+                emitter.onError(new NetworkErrorException());
+            }
+        });
+    }
+
+    private static Flowable<String> getFlowResponse(OkHttpClient client, Request request) {
+        return Flowable.create(emitter -> {
+            Response response;
+            response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                byte[] bodybytes = response.body().bytes();
+                String body = new String(bodybytes);
+                if (body.indexOf("charset=gb2312") != -1) {
+                    body = new String(bodybytes, "GB2312");
+                } else {
+                    body = new String(bodybytes, "gbk");
+                }
+                emitter.onNext(body);
+            } else {
+                emitter.onError(new NetworkErrorException());
+            }
+
+        }, BackpressureStrategy.LATEST);
     }
 
     /***********************************************************************************/

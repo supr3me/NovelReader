@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -91,7 +91,7 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
             return;
         }
         List<CollBookBean> collBooks = new ArrayList<>(collBookBeans);
-        List<Single<BookDetailBean>> observables = new ArrayList<>(collBooks.size());
+        List<Observable<BookDetailBean>> observables = new ArrayList<>(collBooks.size());
         Iterator<CollBookBean> it = collBooks.iterator();
         while (it.hasNext()){
             CollBookBean collBook = it.next();
@@ -105,7 +105,7 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
             }
         }
         //zip可能不是一个好方法。
-        Single.zip(observables, new Function<Object[], List<CollBookBean>>() {
+        Observable.zip(observables, new Function<Object[], List<CollBookBean>>() {
             @Override
             public List<CollBookBean> apply(Object[] objects) throws Exception {
                 List<CollBookBean> newCollBooks = new ArrayList<CollBookBean>(objects.length);
@@ -130,14 +130,14 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
             }
         })
                 .compose(RxUtils::toSimpleSingle)
-                .subscribe(new SingleObserver<List<CollBookBean>>() {
+                .subscribe(new Observer<List<CollBookBean>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         addDisposable(d);
                     }
 
                     @Override
-                    public void onSuccess(List<CollBookBean> value) {
+                    public void onNext(List<CollBookBean> value) {
                         //跟原先比较
                         mView.finishUpdate();
                         mView.complete();
@@ -150,12 +150,17 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
                         mView.complete();
                         LogUtils.e(e);
                     }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
                 });
     }
 
     //更新每个CollBook的目录
     private void updateCategory(List<CollBookBean> collBookBeans){
-        List<Single<List<BookChapterBean>>> observables = new ArrayList<>(collBookBeans.size());
+        List<Observable<List<BookChapterBean>>> observables = new ArrayList<>(collBookBeans.size());
         for (CollBookBean bean : collBookBeans){
             observables.add(
                     NbwRepository.getInstance().getBookChapters(bean.get_id())
@@ -163,7 +168,7 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
         }
         Iterator<CollBookBean> it = collBookBeans.iterator();
         //执行在上一个方法中的子线程中
-        Single.concat(observables)
+        Observable.concat(observables)
                 .subscribe(
                         chapterList -> {
 

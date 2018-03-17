@@ -19,7 +19,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Single;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -39,7 +39,7 @@ public class ReadPresenter extends RxPresenter<ReadContract.View>
     public void loadCategory(String bookId) {
         Disposable disposable = NbwRepository.getInstance()
                 .getBookChapters(bookId)
-                .doOnSuccess(new Consumer<List<BookChapterBean>>() {
+                .doOnNext(new Consumer<List<BookChapterBean>>() {
                     @Override
                     public void accept(List<BookChapterBean> bookChapterBeen) throws Exception {
                         //进行设定BookChapter所属的书的id。
@@ -72,14 +72,14 @@ public class ReadPresenter extends RxPresenter<ReadContract.View>
             mChapterSub.cancel();
         }
 
-        List<Single<ChapterInfoBean>> chapterInfos = new ArrayList<>(bookChapters.size());
+        List<Flowable<ChapterInfoBean>> chapterInfos = new ArrayList<>(bookChapters.size());
         ArrayDeque<String> titles = new ArrayDeque<>(bookChapters.size());
 
         // 将要下载章节，转换成网络请求。
         for (int i = 0; i < size; ++i) {
             TxtChapter bookChapter = bookChapters.get(i);
             // 网络中获取数据
-            Single<ChapterInfoBean> chapterInfoSingle = NbwRepository.getInstance()
+            Flowable<ChapterInfoBean> chapterInfoSingle = NbwRepository.getInstance()
                     .getChapterInfo(bookChapter.getLink());
 
             chapterInfos.add(chapterInfoSingle);
@@ -87,44 +87,47 @@ public class ReadPresenter extends RxPresenter<ReadContract.View>
             titles.add(bookChapter.getTitle());
         }
 
-        Single.concat(chapterInfos)
+
+        Subscriber subscriber
+                = new Subscriber<ChapterInfoBean>() {
+            String title = titles.poll();
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                s.request(Integer.MAX_VALUE);
+                mChapterSub = s;
+            }
+
+            @Override
+            public void onNext(ChapterInfoBean chapterInfoBean) {
+                //存储数据
+                BookRepository.getInstance().saveChapterInfo(
+                        bookId, title, chapterInfoBean.getBody()
+                );
+                mView.finishChapter();
+                //将获取到的数据进行存储
+                title = titles.poll();
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                //只有第一个加载失败才会调用errorChapter
+                if (bookChapters.get(0).getTitle().equals(title)) {
+                    mView.errorChapter();
+                }
+                LogUtils.e(t);
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        };
+
+        Flowable.concat(chapterInfos)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Subscriber<ChapterInfoBean>() {
-                            String title = titles.poll();
+                .subscribe(subscriber);
 
-                            @Override
-                            public void onSubscribe(Subscription s) {
-                                s.request(Integer.MAX_VALUE);
-                                mChapterSub = s;
-                            }
-
-                            @Override
-                            public void onNext(ChapterInfoBean chapterInfoBean) {
-                                //存储数据
-                                BookRepository.getInstance().saveChapterInfo(
-                                        bookId, title, chapterInfoBean.getBody()
-                                );
-                                mView.finishChapter();
-                                //将获取到的数据进行存储
-                                title = titles.poll();
-                            }
-
-                            @Override
-                            public void onError(Throwable t) {
-                                //只有第一个加载失败才会调用errorChapter
-                                if (bookChapters.get(0).getTitle().equals(title)) {
-                                    mView.errorChapter();
-                                }
-                                LogUtils.e(t);
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        }
-                );
     }
 
     @Override

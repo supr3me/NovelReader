@@ -4,6 +4,7 @@ import com.example.newbiechen.ireader.utils.StringUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.util.LinkedList;
@@ -52,6 +53,20 @@ public class Node {
     public String text(String cssQuery) {
         try {
             return element.select(cssQuery).first().text().trim();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String textWithBr(String cssQuery) {
+        try {
+            Element ele = element.select(cssQuery).first();
+            StringBuilder builder = new StringBuilder();
+            for (TextNode node : ele.textNodes()) {
+                builder.append(node.text());
+                builder.append("\n");
+            }
+            return builder.toString();
         } catch (Exception e) {
             return null;
         }

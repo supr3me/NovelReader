@@ -1,15 +1,8 @@
 package com.example.newbiechen.ireader.model.remote;
 
-import android.util.Log;
-
 import com.example.newbiechen.ireader.utils.Constant;
 
-import java.io.IOException;
-
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -25,19 +18,20 @@ public class RemoteHelper {
     private OkHttpClient mOkHttpClient;
     private RemoteHelper(){
         mOkHttpClient = new OkHttpClient.Builder()
-                .addNetworkInterceptor(
-                        new Interceptor() {
-                            @Override
-                            public Response intercept(Chain chain) throws IOException {
-                                Request request = chain.request();
-
-                                //在这里获取到request后就可以做任何事情了
-                                Response response = chain.proceed(request);
-                                Log.d(TAG, "intercept: "+request.url().toString());
-                                return response;
-                            }
-                        }
-                ).build();
+//                .addNetworkInterceptor(
+//                        new Interceptor() {
+//                            @Override
+//                            public Response intercept(Chain chain) throws IOException {
+//                                Request request = chain.request();
+//
+//                                //在这里获取到request后就可以做任何事情了
+//                                Response response = chain.proceed(request);
+//                                Log.d(TAG, "intercept: "+request.url().toString());
+//                                return response;
+//                            }
+//                        }
+//                )
+                .build();
 
         mRetrofit = new Retrofit.Builder()
                 .client(mOkHttpClient)

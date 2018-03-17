@@ -10,7 +10,7 @@ import com.example.newbiechen.ireader.ui.base.RxPresenter;
 import com.example.newbiechen.ireader.utils.LogUtils;
 import com.example.newbiechen.ireader.utils.MD5Utils;
 
-import io.reactivex.SingleObserver;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -74,21 +74,27 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContract.View>
                 .getBookDetail(bookId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<BookDetailBean>() {
+                .subscribe(new Observer<BookDetailBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         addDisposable(d);
                     }
 
                     @Override
-                    public void onSuccess(BookDetailBean value){
+                    public void onNext(BookDetailBean value) {
                         mView.finishRefresh(value);
                         mView.complete();
                     }
 
+
                     @Override
                     public void onError(Throwable e) {
                         mView.showError();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }
